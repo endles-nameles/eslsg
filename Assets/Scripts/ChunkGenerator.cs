@@ -21,8 +21,6 @@ public class ChunkGenerator : MonoBehaviour {
 	void Start(){
 		Chunk = new GameObject[Chunk_SizeWidth, Chunk_SizeHeight];
 
-		Color c = new Color (Random.value, Random.value, Random.value);
-
 		for(int i=0;i<Chunk_SizeWidth;i++){
 			for(int j=0;j<Chunk_SizeHeight;j++){
 				if(!Flat){
@@ -31,31 +29,27 @@ public class ChunkGenerator : MonoBehaviour {
 					if(j < posY){
 						Chunk[i, j] = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-						Chunk[i, j].transform.position = new Vector3(transform.position.x + i, j, 0);
+						Chunk[i, j].transform.position = new Vector3(transform.position.x + i, transform.position.y + j, 0);
 						Chunk[i, j].transform.parent = transform;
 						Chunk[i, j].GetComponent<Renderer>().material = Cube_Material;
+						Chunk[i, j].GetComponent<Renderer>().material.color = new Color (Random.value, Random.value, Random.value);
 
 						if(j > MaxHeight){
 							MaxHeight = j;
 							MaxHeightPoint = i;
 						}
-
-						if(j > posY-2){
-							Chunk[i, j].GetComponent<Renderer>().material.color = new Color (Random.value, Random.value, Random.value);;
-						}else{
-							Chunk[i, j].GetComponent<Renderer>().material.color = new Color (Random.value, Random.value, Random.value);;
-						}
+						Chunk[i, j].GetComponent<Renderer>().material.color = new Color (Random.value, Random.value, Random.value);
 					}else{
 						Chunk[i, j] = null;
 					}
 				}else{
-					if(j < Chunk_SizeHeight - Chunk_SizeHeight/4){
+					if(j < Chunk_SizeHeight){
 						Chunk[i, j] = GameObject.CreatePrimitive(PrimitiveType.Cube);
 						
-						Chunk[i, j].transform.position = new Vector3(transform.position.x + i, j, 0);
+						Chunk[i, j].transform.position = new Vector3(transform.position.x + i, transform.position.y + j, 0);
 						Chunk[i, j].transform.parent = transform;
 						Chunk[i, j].GetComponent<Renderer>().material = Cube_Material;
-						Chunk[i, j].GetComponent<Renderer>().material.color = Color.blue;
+						Chunk[i, j].GetComponent<Renderer>().material.color = new Color (Random.value, Random.value, Random.value);
 
 						if(j > MaxHeight){
 							MaxHeight = j;

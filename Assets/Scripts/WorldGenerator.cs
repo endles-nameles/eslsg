@@ -10,10 +10,11 @@ public class Biome{
 }
 
 public class WorldGenerator : MonoBehaviour {
+	public int World_SizeWidth, World_SizeHeight;
 	public int Chunk_SizeWidth, Chunk_SizeHeight;
 	
-	//[System.NonSerialized]
 	public List<GameObject> CHUNKS;
+	public List<GameObject> ChunkSpawners;
 
 	public Biome[] BIOMES;
 	int Biome_CurrentRight, Biome_CurrentLeft;
@@ -23,9 +24,6 @@ public class WorldGenerator : MonoBehaviour {
 	public int World_Seed;
 	public Material Cube_Material;
 
-	public Transform chunk_NextRight, chunk_NextLeft;
-	int Chunks_Right, Chunks_Left;
-
 	public Transform PlayerObject;
 
 	void Start(){
@@ -33,17 +31,27 @@ public class WorldGenerator : MonoBehaviour {
 			World_Seed = Random.Range (1, 100000);
 		}
 
-		Biome_CurrentRight = 0;
-		Biome_CurrentLeft = 0;
+		for(int i=0;i<World_SizeWidth;i++){
+			for(int j=0;j<World_SizeHeight;j++){
+				GameObject newChunkSpawner = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				newChunkSpawner.transform.position = new Vector3(i*Chunk_SizeWidth, -j*Chunk_SizeHeight, 0);
+				newChunkSpawner.transform.localScale = new Vector3(5, 5, 1);
+				newChunkSpawner.name = "ChunkSpawner";
+				newChunkSpawner.transform.parent = transform;
+				newChunkSpawner.GetComponent<Collider>().enabled = false;
 
-		CreateCHUNK (1, true, true, 0);
-		CreateCHUNK (1, true, true, 1);
-		CreateCHUNK (1, true, true, 0);
-		CreateCHUNK (2, true, true, 0);
-		CreateCHUNK (2, true, true, 1);
+				if(j==0){
+					newChunkSpawner.tag = "Chunk_Surface";
+				}else{
+					newChunkSpawner.tag = "Chunk_Underground";
+				}
+
+				ChunkSpawners.Add(newChunkSpawner);
+			}
+		}
 	}
 
-	void CreateCHUNK(int direction, bool flat, bool building, int extraStruct){
+	void CreateCHUNK(Vector3 position, bool flat, bool building, int extraStruct){
 		GameObject newChunk = new GameObject ("Chunk");
 
 		ChunkGenerator cg = newChunk.AddComponent<ChunkGenerator> ();
@@ -52,58 +60,30 @@ public class WorldGenerator : MonoBehaviour {
 		cg.World_Seed = World_Seed;
 		cg.Cube_Material = Cube_Material;
 
-		//1 - right; 2- left; 3 - down
-		if (direction == 1) {
-			cg.World_Amplitude = BIOMES[Biome_CurrentRight].Amplitude;
-			cg.World_Scale = BIOMES[Biome_CurrentRight].Scale;
+		cg.World_Amplitude = BIOMES[Biome_CurrentRight].Amplitude;
+		cg.World_Scale = BIOMES[Biome_CurrentRight].Scale;
 
-			newChunk.transform.position = new Vector2 (chunk_NextRight.position.x, chunk_NextRight.position.y);
-			chunk_NextRight.position += new Vector3(Chunk_SizeWidth, 0, 0);
-			Chunks_Right++;
+		newChunk.transform.position = position;
 
-			if(Chunks_Right%Biome_Frequency == 0){
-				flat = true;
-				Biome_CurrentRight = Random.Range(0, BIOMES.Length);
-			}else{
-				if(Chunks_Right%FastTravel_Frequency == 0){
-					GameObject newFastTravel = GameObject.CreatePrimitive(PrimitiveType.Cube);
-					newFastTravel.name = "Fast Travel";
-					newFastTravel.transform.localScale = new Vector3(3f, 10f, 1);
-					newFastTravel.transform.parent = newChunk.transform;
-					newFastTravel.GetComponent<Renderer>().material = Cube_Material;
-					newFastTravel.GetComponent<Renderer>().material.color = Color.black;
+		/*
+		if(Chunks_Right%Biome_Frequency == 0){
+			flat = true;
+			Biome_CurrentRight = Random.Range(0, BIOMES.Length);
+		}else{
+			if(Chunks_Right%FastTravel_Frequency == 0){
+				GameObject newFastTravel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				newFastTravel.name = "Fast Travel";
+				newFastTravel.transform.localScale = new Vector3(3f, 10f, 1);
+				newFastTravel.transform.parent = newChunk.transform;
+				newFastTravel.GetComponent<Renderer>().material = Cube_Material;
+				newFastTravel.GetComponent<Renderer>().material.color = Color.black;
 
-					FastTravelPoint ftp = newFastTravel.AddComponent<FastTravelPoint>();
-					ftp.OwnerChunk = newChunk;
-				}
+				FastTravelPoint ftp = newFastTravel.AddComponent<FastTravelPoint>();
+				ftp.OwnerChunk = newChunk;
 			}
 		} 
-		if (direction == 2) {
-			cg.World_Amplitude = BIOMES[Biome_CurrentLeft].Amplitude;
-			cg.World_Scale = BIOMES[Biome_CurrentLeft].Scale;
-
-			newChunk.transform.position = new Vector2 (chunk_NextLeft.position.x, chunk_NextLeft.position.y);
-			chunk_NextLeft.position -= new Vector3(Chunk_SizeWidth, 0, 0);
-			Chunks_Left++;
-
-			if(Chunks_Left%Biome_Frequency == 0){
-				flat = true;
-				Biome_CurrentLeft = Random.Range(0, BIOMES.Length);
-			}else{
-				if(Chunks_Left%FastTravel_Frequency == 0){
-					GameObject newFastTravel = GameObject.CreatePrimitive(PrimitiveType.Cube);
-					newFastTravel.name = "Fast Travel";
-					newFastTravel.transform.localScale = new Vector3(3f, 10f, 1);
-					newFastTravel.transform.parent = newChunk.transform;
-					newFastTravel.GetComponent<Renderer>().material = Cube_Material;
-					newFastTravel.GetComponent<Renderer>().material.color = Color.black;
-
-					FastTravelPoint ftp = newFastTravel.AddComponent<FastTravelPoint>();
-					ftp.OwnerChunk = newChunk;
-				}
-			}
-		}
-
+		*/
+	
 		if (building) {
 			GameObject newBuilding = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			newBuilding.name = "Building";
@@ -134,7 +114,7 @@ public class WorldGenerator : MonoBehaviour {
 		}
 
 		foreach (GameObject chunk in CHUNKS) {
-			if(Vector3.Distance (PlayerObject.position, chunk.transform.position) < Chunk_SizeWidth*35){
+			if(Vector3.Distance (PlayerObject.position, chunk.transform.position) < Chunk_SizeWidth*4.5f){
 				if(!chunk.activeSelf){
 					chunk.SetActive(true);
 				}
@@ -145,12 +125,19 @@ public class WorldGenerator : MonoBehaviour {
 			}
 		}
 
-		if (Vector3.Distance (PlayerObject.position, chunk_NextRight.position) < Chunk_SizeWidth * 5f) {
-			CreateCHUNK(1, false, false, 0);
-		}
-
-		if (Vector3.Distance (PlayerObject.position, chunk_NextLeft.position) < Chunk_SizeWidth * 5f) {
-			CreateCHUNK(2, false, false, 0);
+		foreach(GameObject spawner in ChunkSpawners){
+			if(Vector3.Distance (PlayerObject.position, spawner.transform.position) < Chunk_SizeWidth*7){
+				if(spawner.GetComponent<Renderer>().enabled){
+					if(spawner.tag == "Chunk_Surface"){
+						CreateCHUNK(spawner.transform.position, false, false, 0);
+						spawner.GetComponent<Renderer>().enabled = false;
+					}
+					if(spawner.tag == "Chunk_Underground"){
+						CreateCHUNK(spawner.transform.position, true, false, 0);
+						spawner.GetComponent<Renderer>().enabled = false;
+					}
+				}
+			}
 		}
 	}
 }
