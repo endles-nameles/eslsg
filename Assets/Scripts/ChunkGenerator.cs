@@ -1,3 +1,5 @@
+//Written by Andrei Meluta -- 2015
+
 using UnityEngine;
 using System.Collections;
 
