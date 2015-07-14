@@ -23,8 +23,6 @@ public class WorldGenerator : MonoBehaviour {
 	public int World_Seed;
 	public Material Cube_Material;
 
-	
-
 	public Transform chunk_NextRight, chunk_NextLeft;
 	int Chunks_Right, Chunks_Left;
 
@@ -72,6 +70,8 @@ public class WorldGenerator : MonoBehaviour {
 					newFastTravel.name = "Fast Travel";
 					newFastTravel.transform.localScale = new Vector3(3f, 10f, 1);
 					newFastTravel.transform.parent = newChunk.transform;
+					newFastTravel.GetComponent<Renderer>().material = Cube_Material;
+					newFastTravel.GetComponent<Renderer>().material.color = Color.black;
 
 					FastTravelPoint ftp = newFastTravel.AddComponent<FastTravelPoint>();
 					ftp.OwnerChunk = newChunk;
@@ -95,6 +95,8 @@ public class WorldGenerator : MonoBehaviour {
 					newFastTravel.name = "Fast Travel";
 					newFastTravel.transform.localScale = new Vector3(3f, 10f, 1);
 					newFastTravel.transform.parent = newChunk.transform;
+					newFastTravel.GetComponent<Renderer>().material = Cube_Material;
+					newFastTravel.GetComponent<Renderer>().material.color = Color.black;
 
 					FastTravelPoint ftp = newFastTravel.AddComponent<FastTravelPoint>();
 					ftp.OwnerChunk = newChunk;
@@ -113,6 +115,8 @@ public class WorldGenerator : MonoBehaviour {
 			newBuilding.transform.position = new Vector3(newChunk.transform.position.x + Random.Range (-2f, 2f) + Chunk_SizeWidth/2, newChunk.transform.position.y+Chunk_SizeHeight - Chunk_SizeHeight/4+buildingHeight/2-0.5f, 1);
 			newBuilding.transform.localScale = new Vector3(Random.Range(Chunk_SizeWidth-6, Chunk_SizeWidth-4), buildingHeight, 1);
 			newBuilding.transform.parent = newChunk.transform;
+			newBuilding.GetComponent<Renderer>().material = Cube_Material;
+			newBuilding.GetComponent<Renderer>().material.color = Color.black;
 		}
 
 		if(extraStruct == 1){
