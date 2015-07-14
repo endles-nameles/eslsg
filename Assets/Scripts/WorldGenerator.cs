@@ -110,7 +110,7 @@ public class WorldGenerator : MonoBehaviour {
 
 	void Update(){
 		foreach (GameObject chunk in CHUNKS) {
-			if(Vector3.Distance (PlayerObject.position, chunk.transform.position) < Chunk_SizeWidth*4.5f){
+			if(Vector3.Distance (PlayerObject.position, chunk.transform.position) < Chunk_SizeWidth*2.5f){
 				if(!chunk.activeSelf){
 					chunk.SetActive(true);
 				}
