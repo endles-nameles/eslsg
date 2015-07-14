@@ -17,7 +17,6 @@ public class ChunkGenerator : MonoBehaviour {
 
 	public GameObject[,] Chunk;
 
-
 	void Start(){
 		Chunk = new GameObject[Chunk_SizeWidth, Chunk_SizeHeight];
 
@@ -62,7 +61,6 @@ public class ChunkGenerator : MonoBehaviour {
 	}
 
 	int Noise (int x, int y, float scale, float amp, float exp){
-		return (int) (Mathf.Pow ((Mathf.PerlinNoise(x/scale,y/scale)*amp),(exp))); 
-		
+		return (int) (Mathf.Pow ((Mathf.PerlinNoise(x/scale,y/scale)*amp),(exp)));	
 	}
 }

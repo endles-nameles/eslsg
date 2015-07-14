@@ -109,10 +109,6 @@ public class WorldGenerator : MonoBehaviour {
 	}
 
 	void Update(){
-		if (Input.GetMouseButtonUp (0)) {
-			Application.LoadLevel(Application.loadedLevel);
-		}
-
 		foreach (GameObject chunk in CHUNKS) {
 			if(Vector3.Distance (PlayerObject.position, chunk.transform.position) < Chunk_SizeWidth*4.5f){
 				if(!chunk.activeSelf){
