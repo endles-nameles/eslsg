@@ -3,6 +3,8 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(CharacterController))]
+
 public class PlayerMovement : MonoBehaviour {
 	public float MoveSpeed = 6.0f;
 	public float JumpSpeed = 8.0f;
@@ -10,6 +12,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	CharacterController controller;
 	Vector3 moveDirection = Vector3.zero;
+
+	RaycastHit hit;
 
 	void Start(){
 		controller = GetComponent<CharacterController>();
@@ -28,5 +32,13 @@ public class PlayerMovement : MonoBehaviour {
 
 		moveDirection.y -= GravityPower * Time.deltaTime;
 		controller.Move(moveDirection * Time.deltaTime);
+
+		if(Physics.Raycast(transform.position, Vector3.down, out hit, 1.5f)){
+			if(hit.transform.gameObject.tag == "MovingPlatform"){
+				transform.parent = hit.transform;
+			}else{
+				transform.parent = null;
+			}
+		}
 	}
 }
