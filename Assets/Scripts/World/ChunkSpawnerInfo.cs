@@ -2,5 +2,5 @@
 using System.Collections;
 
 public class ChunkSpawnerInfo : MonoBehaviour {
-	public int Index;
+	public int Index, IndexY;
 }

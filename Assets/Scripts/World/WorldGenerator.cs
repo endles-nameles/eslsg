@@ -48,15 +48,17 @@ public class WorldGenerator : MonoBehaviour {
 		PlayerObject.transform.position = new Vector3(Town.transform.position.x, 200, 0);
 	}
 
-	void CreateCHUNK(Vector3 position, int type, int index){
+	void CreateCHUNK(Vector3 position, int type, bool flat, int index, int indexY){
 		GameObject newChunk = new GameObject ("Chunk");
 
 		ChunkMeshGenerator cg = newChunk.AddComponent<ChunkMeshGenerator> ();
 		cg.Chunk_SizeWidth = Chunk_SizeWidth;
 		cg.Chunk_SizeHeight = Chunk_SizeHeight;
 		cg.World_Seed = World_Seed;
-		cg.Type = type; //0-normal, 1-flat, 2-platform
+		cg.Type = type; //0-normal, 1-flat
+		cg.Flat = flat;
 		cg.Index = index;
+		cg.IndexY = indexY;
 
 		cg.World_Amplitude = BIOMES[Biome_Current].Amplitude;
 		cg.World_Scale = BIOMES[Biome_Current].Scale;
@@ -65,26 +67,11 @@ public class WorldGenerator : MonoBehaviour {
 		newChunk.GetComponent<Renderer>().material = Cube_Material;
 		newChunk.GetComponent<Renderer>().material.mainTexture = BIOMES[Biome_Current].TileSheet;
 
-		if(type == 0 || type == 2){
+		if(type == 0){
 			newChunk.tag = "Chunk_Surface";
 		}else{
 			newChunk.tag = "Chunk_Underground";
 		}
-	
-		/*if (building) {
-			GameObject newBuilding = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			newBuilding.name = "Building";
-
-			float buildingHeight = Random.Range(10, 16);
-			if(Random.Range(0, 1000) < 100){
-				buildingHeight = Random.Range(22, 26);
-			}
-			newBuilding.transform.position = new Vector3(newChunk.transform.position.x + Random.Range (-2f, 2f) + Chunk_SizeWidth/2, newChunk.transform.position.y+Chunk_SizeHeight - Chunk_SizeHeight/4+buildingHeight/2-0.5f, 1);
-			newBuilding.transform.localScale = new Vector3(Random.Range(Chunk_SizeWidth-6, Chunk_SizeWidth-4), buildingHeight, 1);
-			newBuilding.transform.parent = newChunk.transform;
-			newBuilding.GetComponent<Renderer>().material = Cube_Material;
-			newBuilding.GetComponent<Renderer>().material.color = Color.black;
-		}*/
 
 		CHUNKS.Add (newChunk);
 	}
@@ -115,6 +102,8 @@ public class WorldGenerator : MonoBehaviour {
 						csi.Index = World_SizeWidth - (i) + 1;
 					}
 
+					csi.IndexY = j;
+
 					ChunkSpawners.Add(newChunkSpawner);
 				}
 			}
@@ -127,16 +116,21 @@ public class WorldGenerator : MonoBehaviour {
 				ChunkSpawnerInfo csi = spawner.GetComponent<ChunkSpawnerInfo>();
 				if(spawner.tag == "Chunk_Surface"){
 					if(csi.Index%Biome_Frequency == 0 && csi.Index != 0){
-						CreateCHUNK(spawner.transform.position, 2, csi.Index);
+						CreateCHUNK(spawner.transform.position, 1, true, csi.Index, csi.IndexY);
 						Biome_Current = Random.Range(0, BIOMES.Length);
 					}else{
-						CreateCHUNK(spawner.transform.position, 0, csi.Index);
+						CreateCHUNK(spawner.transform.position, 0, false, csi.Index, csi.IndexY);
 					}
 
 					spawner.GetComponent<Renderer>().enabled = false;
 				}
 				if(spawner.tag == "Chunk_Underground"){
-					CreateCHUNK(spawner.transform.position, 1, csi.Index);
+					if(csi.Index%Biome_Frequency == 0 && csi.Index != 0){
+						CreateCHUNK(spawner.transform.position, 1, true, csi.Index, csi.IndexY);
+					}else{
+						CreateCHUNK(spawner.transform.position, 1, false, csi.Index, csi.IndexY);
+					}
+
 					spawner.GetComponent<Renderer>().enabled = false;
 				}
 			}

@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	void Start(){
 		controller = GetComponent<CharacterController>();
+
+		Physics.IgnoreLayerCollision(8, 9, true);
 	}
 
 	void Update(){

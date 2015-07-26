@@ -11,6 +11,7 @@ public class ChunkMeshGenerator : MonoBehaviour {
 	public float World_Amplitude, World_Scale;
 	public int World_Seed;
 	public int Type;
+	public bool Flat;
 
 	[System.NonSerialized]
 	public List<Vector3> newVertices = new List<Vector3>();
@@ -37,11 +38,14 @@ public class ChunkMeshGenerator : MonoBehaviour {
 	public bool update = false;
 
 	public byte[,] Blocks;
-	public int Index;
+	public int Index, IndexY;
+
+	WorldGenerator wg;
 
 	void Start(){
 		mesh = GetComponent<MeshFilter>().mesh;
 		col = GetComponent<MeshCollider>();
+		wg = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
 
 		GenerateChunk();
 		BuildMesh();
@@ -115,20 +119,28 @@ public class ChunkMeshGenerator : MonoBehaviour {
 				}
 
 				if(Type == 1){
-					float posY = Noise(World_Seed+px+(int)(transform.position.x), World_Seed+py+(int)(transform.position.y), 45, World_Amplitude, 1);
-					if(posY > 4.5f){
-						Blocks[px, py] = 1;
+					float posY;
+					if(Flat){
+						if(IndexY == 0){
+							posY = Blocks.GetLength(1)-1;
+						}else{
+							posY = Blocks.GetLength(1);
+						}						
+						
+						if(py < posY){
+							Blocks[px, py] = 3;
+						}else{
+							Blocks[px, py] = 2;
+						}
 					}else{
-						Blocks[px, py] = 0;
-					}
-				}
-
-				if(Type == 2){
-					if(py < Blocks.GetLength(1)-1){
-						Blocks[px, py] = 3;
-					}else{
-						Blocks[px, py] = 2;
-					}
+						posY = Noise(World_Seed+px+(int)(transform.position.x), World_Seed+py+(int)(transform.position.y), 45, World_Amplitude, 1);
+					
+						if(posY > 4.5f){
+							Blocks[px, py] = 1;
+						}else{
+							Blocks[px, py] = 0;
+						}
+					} 
 				}
 			}
 		}
